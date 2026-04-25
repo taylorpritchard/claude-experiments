@@ -98,7 +98,7 @@ The addon enables chat logging automatically when it loads, so you shouldn't nee
 
 If you see *"WowDisco loaded!"* but **not** that second line, logging was already on from a previous session — that's fine too.
 
-> ✅ **Test it:** Type `/wowdisco test` in the chat box. You should see a long line of text appear. That line is what the bot reads!
+> ✅ **Test it:** Type `/wdtest` in the chat box. You should see a long line of text appear. That line is what the bot reads!
 
 ---
 
@@ -211,7 +211,7 @@ You should see something like:
 
 1. In WoW, type in chat:
    ```
-   /wowdisco test
+   /wdtest
    ```
 2. Wait up to 5 minutes (or however long you set `NARRATIVE_INTERVAL`)
 3. Check your Discord channel — a narrative embed should appear! 🎉
@@ -224,11 +224,11 @@ You should see something like:
 |---------|-----|
 | Addon shows as **Incompatible** | At the bottom of the AddOns list screen, tick **"Load out of date AddOns"** — then enable WowDisco. If that option isn't there, the `.toc` file may need its interface number updated (see below) |
 | *"python is not recognized"* | Re-run the Python installer and make sure "Add to PATH" is ticked |
-| Bot is online but nothing posts | Type `/wowdisco test` in WoW chat and watch for a `WOWDISCO|` line to appear — if you don't see one, try `/reload` in WoW to trigger the auto-enable |
+| Bot is online but nothing posts | Type `/wdtest` in WoW chat and watch for a `WOWDISCO|` line to appear — if you don't see one, try `/reload` in WoW to trigger the auto-enable |
 | *"Log file not found"* in the console | Make sure `WOW_LOG_PATH` in `.env` matches your actual WoW install path |
 | Addon doesn't appear in WoW AddOns list | Make sure the folder structure is `AddOns\WowDisco\WowDisco.lua` (not an extra folder inside) |
 | *"DISCORD_TOKEN not set"* | Make sure your `.env` file has no spaces around the `=` sign |
-| Nothing happens after `/wowdisco test` | Check the Command Prompt window for error messages |
+| Nothing happens after `/wdtest` | Check the Command Prompt window for error messages |
 
 ### Fixing the "Incompatible" addon manually
 
@@ -266,8 +266,9 @@ The bot stops when you close the Command Prompt window. To run it in the backgro
 
 | Command (in WoW chat) | Does |
 |-----------------------|------|
-| `/wowdisco test` | Sends a test event right now |
-| `/wowdisco status` | Shows how many events are stored locally |
-| `/wowdisco clear` | Clears the local event log |
+| `/wowdisco` | Shows available commands |
+| `/wdtest` | Sends a test event right now |
+| `/wdstatus` | Shows how many events are stored locally |
+| `/wdclear` | Clears the local event log |
 
 Happy adventuring! ⚔️✨

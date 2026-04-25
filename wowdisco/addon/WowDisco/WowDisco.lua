@@ -135,28 +135,29 @@ end)
 -- ─── Slash Commands ───────────────────────────────────────────────────────────
 
 SLASH_WOWDISCO1 = "/wowdisco"
-SlashCmdList["WOWDISCO"] = function(msg)
-    local cmd = (msg or ""):lower():match("^%s*(%S*)")
+SlashCmdList["WOWDISCO"] = function()
+    print("|cff00ff00WowDisco|r Commands:")
+    print("  /wdtest   - emit a test event now")
+    print("  /wdstatus - show stored event count")
+    print("  /wdclear  - clear stored events")
+end
 
-    if cmd == "test" then
-        EmitEvent("TEST", "Hello from Azeroth! WowDisco is working.")
-        print("|cff00ff00WowDisco|r: Test event emitted.")
+SLASH_WDTEST1 = "/wdtest"
+SlashCmdList["WDTEST"] = function()
+    EmitEvent("TEST", "Hello from Azeroth! WowDisco is working.")
+    print("|cff00ff00WowDisco|r: Test event emitted.")
+end
 
-    elseif cmd == "status" then
-        print(string.format("|cff00ff00WowDisco|r: %d events stored locally.", #WowDiscoData.events))
-        print("|cff00ff00WowDisco|r: Chat logging must be ON for events to reach Discord.")
+SLASH_WDSTATUS1 = "/wdstatus"
+SlashCmdList["WDSTATUS"] = function()
+    print(string.format("|cff00ff00WowDisco|r: %d events stored locally.", #WowDiscoData.events))
+end
 
-    elseif cmd == "clear" then
-        WowDiscoData.events  = {}
-        WowDiscoData.throttle = {}
-        print("|cff00ff00WowDisco|r: Event log cleared.")
-
-    else
-        print("|cff00ff00WowDisco|r Commands:")
-        print("  /wowdisco test   - emit a test event")
-        print("  /wowdisco status - show stored event count")
-        print("  /wowdisco clear  - clear stored events")
-    end
+SLASH_WDCLEAR1 = "/wdclear"
+SlashCmdList["WDCLEAR"] = function()
+    WowDiscoData.events  = {}
+    WowDiscoData.throttle = {}
+    print("|cff00ff00WowDisco|r: Event log cleared.")
 end
 
 -- Enable chat logging automatically so the bot can read events
