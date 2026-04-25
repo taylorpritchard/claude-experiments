@@ -1,9 +1,12 @@
 -- WowDisco: Chronicles your adventures to Discord
 -- Events are stored in SavedVariables (WowDiscoData.events).
--- WoW flushes SavedVariables to disk on logout and /reload.
+-- WoW flushes them to disk on logout, /reload, or /wdflush.
 
-local THROTTLE_SECONDS = 3  -- minimum seconds between identical event types
+local THROTTLE_SECONDS = 3   -- minimum seconds between identical event types
 local MAX_STORED_EVENTS = 200
+-- Set to a number of minutes to auto-flush (reload) periodically.
+-- 0 = disabled. Only reloads outside combat. Try 10 for updates every ~10 min.
+local AUTO_FLUSH_MINUTES = 0
 
 WowDiscoData = WowDiscoData or {}
 WowDiscoData.events  = WowDiscoData.events  or {}
@@ -137,9 +140,10 @@ end)
 SLASH_WOWDISCO1 = "/wowdisco"
 SlashCmdList["WOWDISCO"] = function()
     print("|cff00ff00WowDisco|r Commands:")
-    print("  /wdtest   - emit a test event now")
+    print("  /wdtest   - emit a test event")
     print("  /wdstatus - show stored event count")
     print("  /wdclear  - clear stored events")
+    print("  /wdflush  - post to Discord now (reloads UI)")
 end
 
 SLASH_WDTEST1 = "/wdtest"
@@ -160,4 +164,23 @@ SlashCmdList["WDCLEAR"] = function()
     print("|cff00ff00WowDisco|r: Event log cleared.")
 end
 
-print("|cff00ff00WowDisco|r loaded! Events will post to Discord on your next logout or /reload.")
+SLASH_WDFLUSH1 = "/wdflush"
+SlashCmdList["WDFLUSH"] = function()
+    if InCombatLockdown() then
+        print("|cff00ff00WowDisco|r: Can't flush in combat — try again after.")
+        return
+    end
+    print("|cff00ff00WowDisco|r: Flushing events to Discord...")
+    C_Timer.After(0.3, C_UI.Reload)
+end
+
+-- Optional auto-flush: reloads UI every AUTO_FLUSH_MINUTES minutes (outside combat)
+if AUTO_FLUSH_MINUTES > 0 then
+    C_Timer.NewTicker(AUTO_FLUSH_MINUTES * 60, function()
+        if #WowDiscoData.events > 0 and not InCombatLockdown() then
+            C_UI.Reload()
+        end
+    end)
+end
+
+print("|cff00ff00WowDisco|r loaded! Use /wdflush to post to Discord, or log out.")
