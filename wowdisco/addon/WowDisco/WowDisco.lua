@@ -1,5 +1,5 @@
 -- WowDisco: Chronicles your adventures to Discord
--- Events are emitted as pipe-delimited strings to the chat log.
+-- Events are whispered to yourself so WoW writes them to WoWChatLog.txt.
 -- Chat logging is enabled automatically on load.
 
 local THROTTLE_SECONDS = 3  -- minimum seconds between identical event types
@@ -51,8 +51,9 @@ local function EmitEvent(eventType, ...)
         table.remove(WowDiscoData.events, 1)
     end
 
-    -- Print to default chat frame; WoW logs this when "Log Chat to File" is enabled
-    DEFAULT_CHAT_FRAME:AddMessage(msg)
+    -- Whisper to self so WoW writes the line to WoWChatLog.txt.
+    -- DEFAULT_CHAT_FRAME:AddMessage is visible in the UI but never logged to file.
+    SendChatMessage(msg, "WHISPER", nil, UnitName("player"))
 end
 
 -- ─── Event Frame ─────────────────────────────────────────────────────────────
