@@ -1,6 +1,6 @@
 -- WowDisco: Chronicles your adventures to Discord
 -- Events are emitted as pipe-delimited strings to the chat log.
--- Enable chat logging in WoW: Settings > Interface > Help > Log Chat to File
+-- Chat logging is enabled automatically on load.
 
 local THROTTLE_SECONDS = 3  -- minimum seconds between identical event types
 local MAX_STORED_EVENTS = 200
@@ -156,8 +156,13 @@ SlashCmdList["WOWDISCO"] = function(msg)
         print("  /wowdisco test   - emit a test event")
         print("  /wowdisco status - show stored event count")
         print("  /wowdisco clear  - clear stored events")
-        print("|cff00ff00Tip:|r Enable chat logging: Settings > Interface > Help > Log Chat to File")
     end
+end
+
+-- Enable chat logging automatically so the bot can read events
+if not LoggingChat() then
+    LoggingChat(true)
+    print("|cff00ff00WowDisco|r: Chat logging enabled automatically.")
 end
 
 print("|cff00ff00WowDisco|r loaded! Your adventures will be narrated to Discord.")

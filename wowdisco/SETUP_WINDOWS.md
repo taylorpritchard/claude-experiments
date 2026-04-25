@@ -90,14 +90,13 @@ AddOns\
 3. Find **WowDisco** in the list and tick the checkbox ✅
 4. Log in — you should see a green message: *"WowDisco loaded!"*
 
-### Step 4 · Turn on chat logging
+### Step 4 · Verify chat logging is on
 
-This is how the addon talks to the bot — WoW writes everything to a text file that the bot reads.
+The addon enables chat logging automatically when it loads, so you shouldn't need to do anything here. To confirm it worked, log in with your character and check for this message in your chat window:
 
-1. In WoW, press **Escape** → **System** → **Interface**
-2. Click the **Help** tab on the left
-3. Tick **"Log Chat to File"** ✅
-4. Click **Okay**
+> *WowDisco: Chat logging enabled automatically.*
+
+If you see *"WowDisco loaded!"* but **not** that second line, logging was already on from a previous session — that's fine too.
 
 > ✅ **Test it:** Type `/wowdisco test` in the chat box. You should see a long line of text appear. That line is what the bot reads!
 
@@ -225,7 +224,7 @@ You should see something like:
 |---------|-----|
 | Addon shows as **Incompatible** | At the bottom of the AddOns list screen, tick **"Load out of date AddOns"** — then enable WowDisco. If that option isn't there, the `.toc` file may need its interface number updated (see below) |
 | *"python is not recognized"* | Re-run the Python installer and make sure "Add to PATH" is ticked |
-| Bot is online but nothing posts | Check that chat logging is ON in WoW (Step 4) |
+| Bot is online but nothing posts | Type `/wowdisco test` in WoW chat and watch for a `WOWDISCO|` line to appear — if you don't see one, try `/reload` in WoW to trigger the auto-enable |
 | *"Log file not found"* in the console | Make sure `WOW_LOG_PATH` in `.env` matches your actual WoW install path |
 | Addon doesn't appear in WoW AddOns list | Make sure the folder structure is `AddOns\WowDisco\WowDisco.lua` (not an extra folder inside) |
 | *"DISCORD_TOKEN not set"* | Make sure your `.env` file has no spaces around the `=` sign |
