@@ -1,0 +1,9 @@
+## Interface: 110007
+## Interface-Retail: 110007
+## Title: WowDisco
+## Notes: Tracks your adventures and narrates them to a Discord channel
+## Author: WowDisco
+## Version: 1.0.0
+## SavedVariables: WowDiscoData
+
+WowDisco.lua
