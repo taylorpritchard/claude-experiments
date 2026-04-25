@@ -16,6 +16,48 @@ Before you start, make sure you have accounts / access to these three things:
 
 ---
 
+## Part 0 — Get the files (pick one method)
+
+### Option A · Download a ZIP (simplest, one-time)
+
+1. Go to the GitHub repository page for this project
+2. Click the green **Code** button → **Download ZIP**
+3. Extract the ZIP somewhere you'll remember (e.g. `C:\Users\YourName\Documents\WowDisco`)
+4. Continue to Part 1 using the extracted folder
+
+### Option B · Install via Git (recommended — easy updates forever)
+
+Git lets you update the addon **and** the bot with a single command whenever a new version is released.
+
+#### Install Git
+1. Go to [git-scm.com/download/win](https://git-scm.com/download/win) and download the installer
+2. Run it — the defaults are all fine, just keep clicking **Next** then **Install**
+3. Click **Finish**
+
+#### Clone the repository
+1. Click the Windows Start button, type **cmd**, and open **Command Prompt**
+2. Choose a folder to put the project in, e.g. your Documents folder:
+   ```
+   cd %USERPROFILE%\Documents
+   ```
+3. Clone the repo (replace the URL with the actual one):
+   ```
+   git clone https://github.com/yourname/wowdisco.git
+   ```
+   This creates a `wowdisco` folder with everything inside.
+
+#### Updating later
+When a new version is released, open Command Prompt and run:
+```
+cd %USERPROFILE%\Documents\wowdisco
+git pull
+```
+Then re-copy the addon folder into WoW (Step 2 below) — everything else updates automatically since the bot runs directly from the cloned folder.
+
+> 💡 **Tip:** After `git pull` you only need to re-copy the `WowDisco` addon folder if you see changes mentioned to the addon. The bot (`wowdisco\bot\`) updates in-place; just restart it.
+
+---
+
 ## Part 1 — Install the WoW Addon
 
 ### Step 1 · Find your AddOns folder
@@ -181,12 +223,28 @@ You should see something like:
 
 | Problem | Fix |
 |---------|-----|
+| Addon shows as **Incompatible** | At the bottom of the AddOns list screen, tick **"Load out of date AddOns"** — then enable WowDisco. If that option isn't there, the `.toc` file may need its interface number updated (see below) |
 | *"python is not recognized"* | Re-run the Python installer and make sure "Add to PATH" is ticked |
 | Bot is online but nothing posts | Check that chat logging is ON in WoW (Step 4) |
 | *"Log file not found"* in the console | Make sure `WOW_LOG_PATH` in `.env` matches your actual WoW install path |
 | Addon doesn't appear in WoW AddOns list | Make sure the folder structure is `AddOns\WowDisco\WowDisco.lua` (not an extra folder inside) |
 | *"DISCORD_TOKEN not set"* | Make sure your `.env` file has no spaces around the `=` sign |
 | Nothing happens after `/wowdisco test` | Check the Command Prompt window for error messages |
+
+### Fixing the "Incompatible" addon manually
+
+Each WoW patch has an interface number (e.g. `120005`). If the addon's `.toc` file is behind, WoW flags it as incompatible. To fix it yourself:
+
+1. In WoW, type `/run print(select(4, GetBuildInfo()))` in chat — the number that appears (e.g. `120005`) is your current interface number
+2. Open `AddOns\WowDisco\WowDisco.toc` in Notepad
+3. Change **both** `Interface:` lines to that number:
+   ```
+   ## Interface: 120005
+   ## Interface-Retail: 120005
+   ```
+4. Save, then reload WoW (`/reload` or log out and back in)
+
+If you installed via Git (Part 0 Option B), this fix will be in the next `git pull` automatically.
 
 ---
 
