@@ -1,19 +1,18 @@
 """
-Watches the WoW chat log file and parses WOWDISCO events into structured objects.
+Watches WowDisco's SavedVariables file for new events.
 
-WoW writes lines like:
-  4/25 12:34:56.123  WOWDISCO|1714000000|ZONE_ENTER|Thrall|WARRIOR|60|Stormwind City|Trade District|Stormwind City
-
-Enable WoW chat logging: Settings > Interface > Help > Log Chat to File
+WoW writes _retail_/WTF/Account/<account>/SavedVariables/WowDisco.lua
+to disk on logout and /reload.  We poll for mtime changes and push any
+events with timestamps newer than the last-seen one onto the queue.
 """
 
 import asyncio
+import glob
 import logging
 import os
+import re
 from dataclasses import dataclass, field
 from typing import Optional
-
-import aiofiles
 
 logger = logging.getLogger(__name__)
 
@@ -62,76 +61,114 @@ class WowEvent:
         x = self.extra
 
         mapping = {
-            "LOGIN":         f"{name} (Level {level}) logged into World of Warcraft",
-            "RELOAD":        f"{name} reloaded their UI",
-            "LEVEL_UP":      f"{name} reached Level {x[0] if x else level}!",
-            "DEATH":         f"{name} died in {zone}{sub}",
-            "ALIVE":         f"{name} rose from the dead in {zone}",
-            "ZONE_ENTER":    f"{name} entered {x[0] if x else zone}",
+            "LOGIN":          f"{name} (Level {level}) logged into World of Warcraft",
+            "RELOAD":         f"{name} reloaded their UI",
+            "LEVEL_UP":       f"{name} reached Level {x[0] if x else level}!",
+            "DEATH":          f"{name} died in {zone}{sub}",
+            "ALIVE":          f"{name} rose from the dead in {zone}",
+            "ZONE_ENTER":     f"{name} entered {x[0] if x else zone}",
             "QUEST_COMPLETE": f"{name} completed the quest \"{x[0] if x else 'a quest'}\"",
-            "QUEST_ACCEPT":  f"{name} accepted the quest \"{x[0] if x else 'a new quest'}\"",
-            "ACHIEVEMENT":   f"{name} earned the achievement \"{x[0] if x else 'an achievement'}\"",
-            "BOSS_KILL":     f"{name}'s group defeated {x[0] if x else 'a boss'}!",
-            "GROUP_JOIN":    f"{name} joined a group of {x[0] if x else 'adventurers'}",
-            "GROUP_LEAVE":   f"{name} left their group and is now adventuring solo",
-            "TEST":          f"{name} sent a test: {x[0] if x else ''}",
+            "QUEST_ACCEPT":   f"{name} accepted the quest \"{x[0] if x else 'a new quest'}\"",
+            "ACHIEVEMENT":    f"{name} earned the achievement \"{x[0] if x else 'an achievement'}\"",
+            "BOSS_KILL":      f"{name}'s group defeated {x[0] if x else 'a boss'}!",
+            "GROUP_JOIN":     f"{name} joined a group of {x[0] if x else 'adventurers'}",
+            "GROUP_LEAVE":    f"{name} left their group and is now adventuring solo",
+            "TEST":           f"{name} sent a test: {x[0] if x else ''}",
         }
         return mapping.get(self.event_type, f"{name}: [{self.event_type}] in {zone}")
 
 
-class WowLogWatcher:
-    """Tails the WoW chat log and pushes parsed WowEvents onto an asyncio Queue."""
+def find_sv_path(wow_log_path: str) -> str:
+    """Locate WowDisco.lua by walking up from the WoW log path."""
+    # wow_log_path = .../World of Warcraft/_retail_/Logs/WoWChatLog.txt
+    # target       = .../World of Warcraft/_retail_/WTF/Account/*/SavedVariables/WowDisco.lua
+    retail_dir = os.path.dirname(os.path.dirname(wow_log_path))
+    pattern = os.path.join(retail_dir, "WTF", "Account", "*", "SavedVariables", "WowDisco.lua")
+    matches = glob.glob(pattern)
+    return matches[0] if matches else ""
 
-    def __init__(self, log_path: str, event_queue: asyncio.Queue):
-        self.log_path = log_path
+
+class WowSavedVarsWatcher:
+    """
+    Polls WowDisco.lua for new events.
+
+    WoW flushes SavedVariables to disk on logout and /reload.  Events
+    are keyed by Unix timestamp so we never replay the same event twice,
+    even across bot restarts.
+    """
+
+    def __init__(self, wow_log_path: str, event_queue: asyncio.Queue):
+        self._wow_log_path = wow_log_path
+        self.sv_path = find_sv_path(wow_log_path)
         self.event_queue = event_queue
         self._running = False
+        self._last_seen_ts = 0
 
     async def start(self) -> None:
         self._running = True
-        logger.info("WowLogWatcher: watching %s", self.log_path)
 
-        # Wait for the file to appear (WoW creates it on first login session)
-        while self._running and not os.path.exists(self.log_path):
-            logger.warning("Log file not found: %s — retrying in 15 s…", self.log_path)
-            await asyncio.sleep(15)
+        if self.sv_path:
+            logger.info("Watching SavedVariables: %s", self.sv_path)
+            # Establish baseline so we don't replay events from before now
+            self._last_seen_ts = self._latest_timestamp()
+            logger.info("Baseline: last event timestamp %d", self._last_seen_ts)
+        else:
+            logger.info(
+                "WowDisco.lua not found yet — log out of WoW once to create it "
+                "(WoW writes SavedVariables on logout and /reload)"
+            )
 
-        if not self._running:
-            return
-
-        # Start tailing from the end so we don't replay old sessions
-        file_position = os.path.getsize(self.log_path)
-
+        last_mtime = 0.0
         while self._running:
             try:
-                async with aiofiles.open(
-                    self.log_path, "r", encoding="utf-8", errors="replace"
-                ) as fh:
-                    await fh.seek(file_position)
-                    while self._running:
-                        line = await fh.readline()
-                        if line:
-                            file_position = await fh.tell()
-                            event = WowEvent.from_log_line(line)
-                            if event:
-                                logger.debug("Event: %s %s", event.event_type, event.player_name)
-                                await self.event_queue.put(event)
-                        else:
-                            # Check if file was truncated (new WoW session)
-                            try:
-                                current_size = os.path.getsize(self.log_path)
-                                if current_size < file_position:
-                                    file_position = 0
-                                    logger.info("Log file reset — restarting from beginning")
-                            except OSError:
-                                pass
-                            await asyncio.sleep(0.5)
-            except FileNotFoundError:
-                logger.warning("Log file disappeared — waiting…")
-                await asyncio.sleep(10)
+                if not self.sv_path:
+                    found = find_sv_path(self._wow_log_path)
+                    if found:
+                        self.sv_path = found
+                        logger.info("Found SavedVariables: %s", self.sv_path)
+                        self._last_seen_ts = self._latest_timestamp()
+
+                if self.sv_path and os.path.exists(self.sv_path):
+                    mtime = os.path.getmtime(self.sv_path)
+                    if mtime > last_mtime:
+                        last_mtime = mtime
+                        await self._process_new_events()
             except Exception:
-                logger.exception("Unexpected error in log watcher")
-                await asyncio.sleep(5)
+                logger.exception("Error polling SavedVariables")
+            await asyncio.sleep(2)
+
+    def _read_raw_events(self) -> list[str]:
+        try:
+            with open(self.sv_path, "r", encoding="utf-8", errors="replace") as fh:
+                content = fh.read()
+            return re.findall(r'"(WOWDISCO\|[^"]+)"', content)
+        except Exception:
+            logger.debug("Could not read SavedVariables", exc_info=True)
+            return []
+
+    def _latest_timestamp(self) -> int:
+        ts = 0
+        for raw in self._read_raw_events():
+            ev = WowEvent.from_log_line(raw)
+            if ev:
+                ts = max(ts, ev.timestamp)
+        return ts
+
+    async def _process_new_events(self) -> None:
+        new: list[WowEvent] = []
+        for raw in self._read_raw_events():
+            ev = WowEvent.from_log_line(raw)
+            if ev and ev.timestamp > self._last_seen_ts:
+                new.append(ev)
+
+        if not new:
+            return
+
+        new.sort(key=lambda e: e.timestamp)
+        self._last_seen_ts = new[-1].timestamp
+        for ev in new:
+            logger.info("New event: %s for %s", ev.event_type, ev.player_name)
+            await self.event_queue.put(ev)
 
     def stop(self) -> None:
         self._running = False

@@ -1,10 +1,13 @@
 """
-WowDisco bot — watches your WoW chat log and posts fun narrative updates to Discord.
+WowDisco bot — reads your WoW SavedVariables and posts fun narrative updates to Discord.
 
 Usage:
   1. Copy .env.example to .env and fill in your tokens/paths
   2. pip install -r requirements.txt
   3. python main.py
+
+Events are picked up when WoW writes SavedVariables to disk
+(on logout, /reload, or character switch).
 """
 
 import asyncio
@@ -17,7 +20,7 @@ from discord.ext import tasks
 from dotenv import load_dotenv
 
 from narrator import WowNarrator
-from watcher import WowEvent, WowLogWatcher
+from watcher import WowEvent, WowSavedVarsWatcher
 
 load_dotenv()
 
@@ -90,7 +93,7 @@ async def on_ready() -> None:
 
 
 async def _run_watcher() -> None:
-    watcher = WowLogWatcher(WOW_LOG_PATH, event_queue)
+    watcher = WowSavedVarsWatcher(WOW_LOG_PATH, event_queue)
     await watcher.start()
 
 

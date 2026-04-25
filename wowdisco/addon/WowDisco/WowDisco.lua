@@ -1,6 +1,6 @@
 -- WowDisco: Chronicles your adventures to Discord
--- Events are whispered to yourself so WoW writes them to WoWChatLog.txt.
--- Chat logging is enabled automatically on load.
+-- Events are stored in SavedVariables (WowDiscoData.events).
+-- WoW flushes SavedVariables to disk on logout and /reload.
 
 local THROTTLE_SECONDS = 3  -- minimum seconds between identical event types
 local MAX_STORED_EVENTS = 200
@@ -51,9 +51,8 @@ local function EmitEvent(eventType, ...)
         table.remove(WowDiscoData.events, 1)
     end
 
-    -- Whisper to self so WoW writes the line to WoWChatLog.txt.
-    -- DEFAULT_CHAT_FRAME:AddMessage is visible in the UI but never logged to file.
-    SendChatMessage(msg, "WHISPER", nil, UnitName("player"))
+    -- SavedVariables (above) is the only output needed.
+    -- The Python bot reads WowDisco.lua after each logout or /reload.
 end
 
 -- ─── Event Frame ─────────────────────────────────────────────────────────────
@@ -161,10 +160,4 @@ SlashCmdList["WDCLEAR"] = function()
     print("|cff00ff00WowDisco|r: Event log cleared.")
 end
 
--- Enable chat logging automatically so the bot can read events
-if not LoggingChat() then
-    LoggingChat(true)
-    print("|cff00ff00WowDisco|r: Chat logging enabled automatically.")
-end
-
-print("|cff00ff00WowDisco|r loaded! Your adventures will be narrated to Discord.")
+print("|cff00ff00WowDisco|r loaded! Events will post to Discord on your next logout or /reload.")
