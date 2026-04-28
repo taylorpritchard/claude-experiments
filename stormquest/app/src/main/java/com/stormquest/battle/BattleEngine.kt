@@ -306,12 +306,11 @@ class BattleEngine(
         } else {
             // Physical attack
             val target = selectEnemyTarget(aliveParty)
-            val dmg = calcPhysicalDamage(data.str, target.def, 0)
-            val effectiveDef = if (target.isDefending) target.def + target.def else target.def
-            val baseDmg = max(1, data.str * 2 - effectiveDef + rng.nextInt(6))
-            val actualDmg = if (target.hasProtect()) max(1, baseDmg - 3) else baseDmg
-            target.currentHp = max(0, target.currentHp - actualDmg)
-            messages.add("${enemy.displayName} attacks ${target.name} for $actualDmg damage!${if (target.isDefending) " (Defending)" else ""}")
+            val effectiveDef = if (target.isDefending) target.def * 2 else target.def
+            var baseDmg = max(1, data.str * 2 - effectiveDef + rng.nextInt(6))
+            if (target.hasProtect()) baseDmg = max(1, baseDmg - 3)
+            target.currentHp = max(0, target.currentHp - baseDmg)
+            messages.add("${enemy.displayName} attacks ${target.name} for $baseDmg damage!${if (target.isDefending) " (Defending)" else ""}")
             if (!target.isAlive) messages.add("${target.name} has fallen!")
         }
 
