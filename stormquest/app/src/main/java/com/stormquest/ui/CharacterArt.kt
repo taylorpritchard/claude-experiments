@@ -10,15 +10,15 @@ object CharacterArt {
     // Row 0 (top):    Human · Dwarf · Elf · Halfling · Half-Orc · Gnome
     // Row 1 (bottom): Paladin · Warrior · Mage · Rogue · Ranger · Cleric
 
-    private const val SHEET_W = 1408
-    private const val SHEET_H = 768
-    private const val COLS = 6
-    private const val CELL_W = SHEET_W / COLS   // 234 px
-    private const val HEADER_H = 115            // parchment title banner
-    private const val ROW_H = (SHEET_H - HEADER_H) / 2  // 326 px
-    private const val LABEL_H = 58             // name label at bottom of each portrait
-    private const val PAD_X = 6
-    private const val PAD_Y = 6
+    // Measured via pixel analysis — 235px column spacing, first center at x=110
+    private val X_CENTERS = intArrayOf(110, 345, 580, 815, 1050, 1285)
+    private const val HALF_W = 95   // ±95px from center keeps neighbours out
+
+    private const val RACE_Y1  = 145
+    private const val RACE_Y2  = 415
+
+    private const val CLASS_Y1 = 480
+    private const val CLASS_Y2 = 708  // stops before the icon name labels
 
     private val raceCol = mapOf(
         "human" to 0, "dwarf" to 1, "elf" to 2,
@@ -32,24 +32,25 @@ object CharacterArt {
     private var sheet: Bitmap? = null
 
     private fun getSheet(context: Context): Bitmap? {
-        if (sheet == null || sheet!!.isRecycled) {
+        if (sheet == null || sheet!!.isRecycled)
             sheet = BitmapFactory.decodeResource(context.resources, R.drawable.character_sheet)
-        }
         return sheet
     }
 
     fun getRace(context: Context, raceId: String): Bitmap? =
-        raceCol[raceId]?.let { col -> crop(context, col, 0) }
+        raceCol[raceId]?.let { crop(context, it, isRace = true) }
 
     fun getCharClass(context: Context, classId: String): Bitmap? =
-        classCol[classId]?.let { col -> crop(context, col, 1) }
+        classCol[classId]?.let { crop(context, it, isRace = false) }
 
-    private fun crop(context: Context, col: Int, row: Int): Bitmap? {
+    private fun crop(context: Context, col: Int, isRace: Boolean): Bitmap? {
         val src = getSheet(context) ?: return null
-        val x = col * CELL_W + PAD_X
-        val y = HEADER_H + row * ROW_H + PAD_Y
-        val w = (CELL_W - PAD_X * 2).coerceAtMost(src.width - x)
-        val h = (ROW_H - LABEL_H - PAD_Y).coerceAtMost(src.height - y)
+        val cx = X_CENTERS[col]
+        val x  = (cx - HALF_W).coerceAtLeast(0)
+        val y  = if (isRace) RACE_Y1 else CLASS_Y1
+        val w  = (HALF_W * 2).coerceAtMost(src.width - x)
+        val h  = (if (isRace) RACE_Y2 - RACE_Y1 else CLASS_Y2 - CLASS_Y1)
+                     .coerceAtMost(src.height - y)
         if (w <= 0 || h <= 0) return null
         return try {
             Bitmap.createBitmap(src, x, y, w, h)
