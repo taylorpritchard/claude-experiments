@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fillViewport="true">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- Battle Header -->
+    <TextView
+        android:id="@+id/tvBattleHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BATTLE"
+        style="@style/HeaderText"
+        android:textSize="16sp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="4dp"/>
+
+    <!-- Enemy Status Section -->
+    <LinearLayout
+        android:id="@+id/llEnemyStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/panel_background"
+        android:padding="8dp"
+        android:layout_marginBottom="4dp"/>
+
+    <!-- Battle Log -->
+    <TextView
+        android:id="@+id/tvBattleLog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minLines="4"
+        android:text=""
+        style="@style/LogText"
+        android:padding="8dp"
+        android:layout_marginBottom="4dp"/>
+
+    <!-- Party Status -->
+    <LinearLayout
+        android:id="@+id/llPartyBattle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/panel_background"
+        android:padding="4dp"
+        android:layout_marginBottom="4dp"/>
+
+    <!-- Turn Indicator -->
+    <TextView
+        android:id="@+id/tvTurnIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Action"
+        android:textColor="@color/primary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:layout_marginBottom="4dp"/>
+
+    <!-- Main Action Buttons -->
+    <LinearLayout
+        android:id="@+id/llMainActions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnAttack"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="ATTACK"
+            style="@style/ActionButton"
+            android:layout_marginEnd="2dp"/>
+
+        <Button
+            android:id="@+id/btnMagic"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="MAGIC"
+            style="@style/ActionButton"
+            android:layout_marginEnd="2dp"/>
+
+        <Button
+            android:id="@+id/btnItem"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="ITEM"
+            style="@style/ActionButton"
+            android:layout_marginEnd="2dp"/>
+
+        <Button
+            android:id="@+id/btnDefend"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="DEF"
+            style="@style/ActionButton"
+            android:layout_marginEnd="2dp"/>
+
+        <Button
+            android:id="@+id/btnFlee"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="FLEE"
+            style="@style/ActionButton"/>
+    </LinearLayout>
+
+    <!-- Enemy Target Selection (shown when ATTACK or spell target needed) -->
+    <LinearLayout
+        android:id="@+id/llEnemyTargets"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="4dp"
+        android:visibility="gone"/>
+
+    <!-- Spell List (shown when MAGIC pressed) -->
+    <LinearLayout
+        android:id="@+id/llSpellList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="4dp"
+        android:visibility="gone"/>
+
+    <!-- Ally Target Selection (shown for healing spells/items) -->
+    <LinearLayout
+        android:id="@+id/llAllyTargets"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="4dp"
+        android:visibility="gone"/>
+
+    <!-- Item List (shown when ITEM pressed) -->
+    <LinearLayout
+        android:id="@+id/llItemList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="4dp"
+        android:visibility="gone"/>
+
+</LinearLayout>
+</ScrollView>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StormQuest</string>
+    <string name="title_main">STORMQUEST</string>
+    <string name="subtitle_main">A Tale of Heroes</string>
+    <string name="btn_new_game">NEW GAME</string>
+    <string name="btn_continue">CONTINUE</string>
+    <string name="btn_advance">Advance</string>
+    <string name="btn_rest">Rest (10G)</string>
+    <string name="btn_shop">Shop</string>
+    <string name="btn_attack">ATTACK</string>
+    <string name="btn_magic">MAGIC</string>
+    <string name="btn_item">ITEM</string>
+    <string name="btn_defend">DEFEND</string>
+    <string name="btn_flee">FLEE</string>
+    <string name="merchant_header">Merchant\'s Stall</string>
+</resources>

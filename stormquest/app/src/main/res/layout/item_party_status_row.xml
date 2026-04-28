@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/card"
+    android:padding="8dp"
+    android:layout_marginBottom="4dp">
+
+    <!-- Top row: name + class + HP/MP numbers -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="2dp">
+
+        <TextView
+            android:id="@+id/tvCharName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Name"
+            android:textColor="@color/primary"
+            android:textSize="13sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvCharClass"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Lv1 Warrior"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp"/>
+
+        <TextView
+            android:id="@+id/tvHpValue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="HP: 0/0"
+            android:textColor="@color/hp_bar"
+            android:textSize="11sp"/>
+
+        <TextView
+            android:id="@+id/tvMpValue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="MP: 0/0"
+            android:textColor="@color/mp_bar"
+            android:textSize="11sp"/>
+    </LinearLayout>
+
+    <!-- HP bar -->
+    <ProgressBar
+        android:id="@+id/pbHp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:progressTint="@color/hp_bar"
+        android:progressBackgroundTint="#1a3a1a"
+        android:max="100"
+        android:progress="100"
+        android:layout_marginBottom="2dp"/>
+
+    <!-- MP bar -->
+    <ProgressBar
+        android:id="@+id/pbMp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:progressTint="@color/mp_bar"
+        android:progressBackgroundTint="#0a1a3a"
+        android:max="100"
+        android:progress="100"/>
+
+</LinearLayout>

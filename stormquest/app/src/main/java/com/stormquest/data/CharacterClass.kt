@@ -65,8 +65,7 @@ object CharacterClasses {
             1 to listOf(Spells.HEAL),
             3 to listOf(Spells.PROTECT, Spells.HOLY),
             6 to listOf(Spells.HEALARA),
-            8 to listOf(Spells.CURALL),
-            10 to listOf(Spells.HOLY)
+            10 to listOf(Spells.CURALL)
         )
     )
 

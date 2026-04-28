@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Merchant's Stall"
+            style="@style/HeaderText"
+            android:layout_gravity="center"
+            android:layout_marginBottom="4dp"/>
+
+        <!-- Gold display -->
+        <TextView
+            android:id="@+id/tvShopGold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gold: 0G"
+            android:textColor="@color/primary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Separator -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/card_border"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Shop Items header -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="For Sale:"
+            android:textColor="@color/primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Shop item list -->
+        <LinearLayout
+            android:id="@+id/llShopItems"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Separator -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/card_border"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Inventory header -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your Inventory:"
+            android:textColor="@color/primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Inventory list -->
+        <LinearLayout
+            android:id="@+id/llInventory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/panel_background"
+            android:padding="8dp"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Back button -->
+        <Button
+            android:id="@+id/btnShopBack"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="&lt; Back"
+            style="@style/BronzeButton"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+</ScrollView>
