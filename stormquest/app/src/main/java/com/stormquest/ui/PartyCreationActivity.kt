@@ -3,6 +3,7 @@ package com.stormquest.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.stormquest.R
@@ -78,8 +79,12 @@ class PartyCreationActivity : AppCompatActivity() {
             val card = inflater.inflate(R.layout.item_selection_card, llRaceCards, false)
             val tvName = card.findViewById<TextView>(R.id.tvCardName)
             val tvDesc = card.findViewById<TextView>(R.id.tvCardDesc)
+            val ivPortrait = card.findViewById<ImageView>(R.id.ivPortrait)
             tvName.text = race.displayName
             tvDesc.text = race.description
+            val portrait = CharacterArt.getRace(this, race.id)
+            if (portrait != null) ivPortrait.setImageBitmap(portrait)
+            else ivPortrait.visibility = View.GONE
             card.tag = race.id
             card.setOnClickListener {
                 selectedRace = race
@@ -98,8 +103,12 @@ class PartyCreationActivity : AppCompatActivity() {
             val card = inflater.inflate(R.layout.item_selection_card, llClassCards, false)
             val tvName = card.findViewById<TextView>(R.id.tvCardName)
             val tvDesc = card.findViewById<TextView>(R.id.tvCardDesc)
+            val ivPortrait = card.findViewById<ImageView>(R.id.ivPortrait)
             tvName.text = cls.displayName
             tvDesc.text = cls.description
+            val portrait = CharacterArt.getCharClass(this, cls.id)
+            if (portrait != null) ivPortrait.setImageBitmap(portrait)
+            else ivPortrait.visibility = View.GONE
             card.tag = cls.id
             card.setOnClickListener {
                 selectedClass = cls

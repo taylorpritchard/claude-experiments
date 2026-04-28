@@ -3,11 +3,18 @@
     android:layout_width="110dp"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp"
+    android:padding="6dp"
     android:background="@drawable/card_normal"
     android:layout_marginEnd="8dp"
     android:clickable="true"
     android:focusable="true">
+
+    <ImageView
+        android:id="@+id/ivPortrait"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:scaleType="fitCenter"
+        android:layout_marginBottom="4dp"/>
 
     <TextView
         android:id="@+id/tvCardName"
@@ -15,9 +22,9 @@
         android:layout_height="wrap_content"
         android:text="Name"
         android:textColor="@color/primary"
-        android:textSize="13sp"
+        android:textSize="12sp"
         android:textStyle="bold"
-        android:layout_marginBottom="4dp"/>
+        android:layout_marginBottom="2dp"/>
 
     <TextView
         android:id="@+id/tvCardDesc"
@@ -25,6 +32,6 @@
         android:layout_height="wrap_content"
         android:text="Description"
         android:textColor="@color/text_secondary"
-        android:textSize="11sp"/>
+        android:textSize="10sp"/>
 
 </LinearLayout>
