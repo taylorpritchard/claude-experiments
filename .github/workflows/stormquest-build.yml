@@ -1,0 +1,48 @@
+name: Build StormQuest APK
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "stormquest/**"
+      - ".github/workflows/stormquest-build.yml"
+  pull_request:
+    paths:
+      - "stormquest/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: "8.4"
+          cache-read-only: false
+
+      - name: Make gradlew executable
+        run: chmod +x stormquest/gradlew
+
+      - name: Build debug APK
+        working-directory: stormquest
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: StormQuest-debug-${{ github.sha }}
+          path: stormquest/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
