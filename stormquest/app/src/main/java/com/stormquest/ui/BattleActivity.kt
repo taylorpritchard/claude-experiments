@@ -1,5 +1,6 @@
 package com.stormquest.ui
 
+import android.animation.ObjectAnimator
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -94,11 +95,16 @@ class BattleActivity : AppCompatActivity() {
     }
 
     private fun setupMainActionButtons() {
-        btnAttack.setOnClickListener { onAttackPressed() }
-        btnMagic.setOnClickListener { showSpellList() }
-        btnItem.setOnClickListener { showItemList() }
-        btnDefend.setOnClickListener { selectDefend() }
-        btnFlee.setOnClickListener { confirmFlee() }
+        btnAttack.setOnClickListener { SoundManager.click(); onAttackPressed() }
+        btnMagic.setOnClickListener  { SoundManager.click(); showSpellList() }
+        btnItem.setOnClickListener   { SoundManager.click(); showItemList() }
+        btnDefend.setOnClickListener { SoundManager.click(); selectDefend() }
+        btnFlee.setOnClickListener   { SoundManager.click(); confirmFlee() }
+    }
+
+    private fun shakeView(view: View) {
+        ObjectAnimator.ofFloat(view, "translationX", 0f, -14f, 14f, -10f, 10f, -5f, 5f, 0f)
+            .apply { duration = 280; start() }
     }
 
     private fun refresh() {
@@ -519,6 +525,19 @@ class BattleActivity : AppCompatActivity() {
         for (msg in result.messages) {
             addLog(msg)
         }
+
+        val hasAttack = result.messages.any { it.contains("attacks") }
+        val hasMagic  = result.messages.any { it.contains("casts") }
+        val enemyHit  = enemies.any { e -> result.messages.any { it.contains(e.displayName) && it.contains("takes") } }
+        val partyHit  = party.any  { c -> result.messages.any { it.contains(c.name)          && it.contains("takes") } }
+
+        when {
+            hasMagic  -> SoundManager.magic()
+            hasAttack -> SoundManager.attack()
+        }
+        if (enemyHit)  shakeView(llEnemyStatus)
+        if (partyHit)  shakeView(llPartyBattle)
+
         refresh()
 
         if (result.fled) {
@@ -565,6 +584,7 @@ class BattleActivity : AppCompatActivity() {
 
     private fun showVictoryDialog(expGained: Int, goldGained: Int) {
         battleOver = true
+        SoundManager.victory()
         tvTurnIndicator.text = "VICTORY!"
         tvTurnIndicator.setTextColor(Color.parseColor("#ffd700"))
         llMainActions.visibility = View.GONE
@@ -597,6 +617,7 @@ class BattleActivity : AppCompatActivity() {
 
     private fun showDefeatDialog() {
         battleOver = true
+        SoundManager.defeat()
         tvTurnIndicator.text = "GAME OVER"
         tvTurnIndicator.setTextColor(Color.parseColor("#cc3333"))
         llMainActions.visibility = View.GONE

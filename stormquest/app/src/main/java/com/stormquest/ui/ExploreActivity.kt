@@ -35,9 +35,9 @@ class ExploreActivity : AppCompatActivity() {
         btnRest = findViewById(R.id.btnRest)
         btnShop = findViewById(R.id.btnShop)
 
-        btnAdvance.setOnClickListener { onAdvance() }
-        btnRest.setOnClickListener { onRest() }
-        btnShop.setOnClickListener { onShop() }
+        btnAdvance.setOnClickListener { SoundManager.click(); onAdvance() }
+        btnRest.setOnClickListener    { SoundManager.click(); onRest() }
+        btnShop.setOnClickListener    { SoundManager.click(); onShop() }
 
         refresh()
     }

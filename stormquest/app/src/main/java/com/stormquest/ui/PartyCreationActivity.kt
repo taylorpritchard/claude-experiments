@@ -1,5 +1,6 @@
 package com.stormquest.ui
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -59,6 +61,7 @@ class PartyCreationActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please enter a name!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            SoundManager.nextChar()
             val character = GameCharacter.create(name, selectedRace, selectedClass)
             GameState.party.add(character)
 
@@ -125,6 +128,7 @@ class PartyCreationActivity : AppCompatActivity() {
             else ivPortrait.visibility = View.GONE
             card.tag = race.id
             card.setOnClickListener {
+                SoundManager.select()
                 selectedRace = race
                 highlightCards(llRaceCards, race.id)
                 updateStatsPreview()
@@ -149,6 +153,7 @@ class PartyCreationActivity : AppCompatActivity() {
             else ivPortrait.visibility = View.GONE
             card.tag = cls.id
             card.setOnClickListener {
+                SoundManager.select()
                 selectedClass = cls
                 highlightCards(llClassCards, cls.id)
                 updateStatsPreview()
@@ -163,13 +168,21 @@ class PartyCreationActivity : AppCompatActivity() {
             val card = container.getChildAt(i)
             if (card.tag == selectedId) {
                 card.setBackgroundResource(R.drawable.card_selected)
+                card.animate()
+                    .scaleX(1.08f).scaleY(1.08f)
+                    .setDuration(90)
+                    .withEndAction {
+                        card.animate().scaleX(1f).scaleY(1f).setDuration(90).start()
+                    }.start()
             } else {
+                card.animate().scaleX(1f).scaleY(1f).setDuration(90).start()
                 card.setBackgroundResource(R.drawable.card_normal)
             }
         }
     }
 
     private fun updateStatsPreview() {
+        statBarIndex = 0
         llStatsPreview.removeAllViews()
         val maxHp  = selectedClass.baseHp  + selectedRace.hpBonus
         val maxMp  = selectedClass.baseMp  + selectedRace.mpBonus
@@ -187,6 +200,8 @@ class PartyCreationActivity : AppCompatActivity() {
         addStatBar("SPD", spd,   14,  "#50c8c0")
         addStatBar("LCK", lck,   12,  "#e0c050")
     }
+
+    private var statBarIndex = 0
 
     private fun addStatBar(label: String, value: Int, max: Int, hexColor: String) {
         val row = LinearLayout(this).apply {
@@ -210,9 +225,10 @@ class PartyCreationActivity : AppCompatActivity() {
             layoutParams = LinearLayout.LayoutParams((36 * dp).toInt(), LinearLayout.LayoutParams.WRAP_CONTENT)
         }
 
+        val barIdx = statBarIndex++
         val bar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
             this.max = max
-            progress = value
+            progress = 0
             val params = LinearLayout.LayoutParams(0, (8 * dp).toInt(), 1f)
             params.gravity = android.view.Gravity.CENTER_VERTICAL
             params.marginStart = (6 * dp).toInt()
@@ -233,6 +249,13 @@ class PartyCreationActivity : AppCompatActivity() {
         row.addView(bar)
         row.addView(tvValue)
         llStatsPreview.addView(row)
+
+        ObjectAnimator.ofInt(bar, "progress", 0, value).apply {
+            duration = 350
+            startDelay = barIdx * 40L
+            interpolator = DecelerateInterpolator()
+            start()
+        }
     }
 
     private fun updateUI() {
