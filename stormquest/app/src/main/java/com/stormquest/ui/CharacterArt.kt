@@ -18,7 +18,7 @@ object CharacterArt {
     private const val RACE_Y2  = 415
 
     private const val CLASS_Y1 = 480
-    private const val CLASS_Y2 = 708  // stops before the icon name labels
+    private const val CLASS_Y2 = 635  // stops before the icon name labels
 
     private val raceCol = mapOf(
         "human" to 0, "dwarf" to 1, "elf" to 2,
