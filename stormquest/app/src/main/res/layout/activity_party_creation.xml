@@ -10,34 +10,34 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Header -->
+        <!-- Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Create Your Party"
             style="@style/HeaderText"
             android:layout_gravity="center"
-            android:layout_marginBottom="4dp"/>
+            android:layout_marginBottom="12dp"/>
 
-        <!-- Progress indicator -->
-        <TextView
-            android:id="@+id/tvProgress"
+        <!-- Progress dots -->
+        <LinearLayout
+            android:id="@+id/llProgressDots"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Character 1 of 4"
-            android:textColor="@color/secondary"
-            android:textSize="14sp"
+            android:orientation="horizontal"
             android:layout_gravity="center"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="20dp"/>
 
         <!-- Name Entry -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Name:"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            android:layout_marginBottom="4dp"/>
+            android:text="NAME"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.12"
+            android:layout_marginBottom="6dp"/>
 
         <EditText
             android:id="@+id/etCharName"
@@ -50,24 +50,24 @@
             android:padding="12dp"
             android:textSize="15sp"
             android:inputType="textPersonName"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="20dp"/>
 
-        <!-- Race Header -->
+        <!-- Race section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Race:"
-            android:textColor="@color/primary"
-            android:textSize="14sp"
+            android:text="RACE"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp"
             android:textStyle="bold"
+            android:letterSpacing="0.12"
             android:layout_marginBottom="8dp"/>
 
-        <!-- Race cards in horizontal scroll -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="none"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="20dp">
 
             <LinearLayout
                 android:id="@+id/llRaceCards"
@@ -77,22 +77,22 @@
                 android:padding="4dp"/>
         </HorizontalScrollView>
 
-        <!-- Class Header -->
+        <!-- Class section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Class:"
-            android:textColor="@color/primary"
-            android:textSize="14sp"
+            android:text="CLASS"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp"
             android:textStyle="bold"
+            android:letterSpacing="0.12"
             android:layout_marginBottom="8dp"/>
 
-        <!-- Class cards in horizontal scroll -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="none"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="20dp">
 
             <LinearLayout
                 android:id="@+id/llClassCards"
@@ -102,27 +102,25 @@
                 android:padding="4dp"/>
         </HorizontalScrollView>
 
-        <!-- Stats Preview -->
+        <!-- Base Stats -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Base Stats:"
-            android:textColor="@color/primary"
-            android:textSize="14sp"
+            android:text="BASE STATS"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp"
             android:textStyle="bold"
-            android:layout_marginBottom="4dp"/>
+            android:letterSpacing="0.12"
+            android:layout_marginBottom="8dp"/>
 
-        <TextView
-            android:id="@+id/tvStatsPreview"
+        <LinearLayout
+            android:id="@+id/llStatsPreview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="HP: -- MP: --\nSTR: -- DEF: -- MAG: --\nSPD: -- LCK: --"
-            android:textColor="@color/text_primary"
-            android:textSize="13sp"
-            android:fontFamily="monospace"
+            android:orientation="vertical"
             android:background="@drawable/panel_background"
             android:padding="12dp"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginBottom="32dp"/>
 
         <!-- Next Button -->
         <Button

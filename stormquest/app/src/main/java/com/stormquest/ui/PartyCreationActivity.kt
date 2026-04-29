@@ -1,11 +1,15 @@
 package com.stormquest.ui
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.stormquest.R
 import com.stormquest.data.CharacterClass
 import com.stormquest.data.CharacterClasses
@@ -21,24 +25,29 @@ class PartyCreationActivity : AppCompatActivity() {
     private var selectedRace: Race = Races.HUMAN
     private var selectedClass: CharacterClass = CharacterClasses.WARRIOR
 
-    // UI references
-    private lateinit var tvProgress: TextView
+    private lateinit var llProgressDots: LinearLayout
     private lateinit var etName: EditText
     private lateinit var llRaceCards: LinearLayout
     private lateinit var llClassCards: LinearLayout
-    private lateinit var tvStatsPreview: TextView
+    private lateinit var llStatsPreview: LinearLayout
     private lateinit var btnNext: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_party_creation)
 
-        tvProgress = findViewById(R.id.tvProgress)
+        llProgressDots = findViewById(R.id.llProgressDots)
         etName = findViewById(R.id.etCharName)
         llRaceCards = findViewById(R.id.llRaceCards)
         llClassCards = findViewById(R.id.llClassCards)
-        tvStatsPreview = findViewById(R.id.tvStatsPreview)
+        llStatsPreview = findViewById(R.id.llStatsPreview)
         btnNext = findViewById(R.id.btnNext)
+
+        etName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) { refreshNextButton() }
+        })
 
         buildRaceCards()
         buildClassCards()
@@ -55,13 +64,11 @@ class PartyCreationActivity : AppCompatActivity() {
 
             currentCharIndex++
             if (currentCharIndex >= PARTY_SIZE) {
-                // Start the game
                 val intent = Intent(this, ExploreActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 finish()
             } else {
-                // Reset for next character
                 etName.setText("")
                 selectedRace = Races.HUMAN
                 selectedClass = CharacterClasses.WARRIOR
@@ -69,6 +76,38 @@ class PartyCreationActivity : AppCompatActivity() {
                 buildClassCards()
                 updateUI()
             }
+        }
+    }
+
+    private fun refreshNextButton() {
+        val enabled = etName.text.toString().trim().isNotEmpty()
+        btnNext.isEnabled = enabled
+        btnNext.alpha = if (enabled) 1f else 0.45f
+    }
+
+    private fun buildProgressDots() {
+        llProgressDots.removeAllViews()
+        val dp8 = (8 * resources.displayMetrics.density).toInt()
+        val dp4 = (4 * resources.displayMetrics.density).toInt()
+        val dotSize = (10 * resources.displayMetrics.density).toInt()
+
+        for (i in 0 until PARTY_SIZE) {
+            val dot = View(this)
+            val params = LinearLayout.LayoutParams(dotSize, dotSize)
+            params.marginEnd = dp4
+            params.marginStart = dp4
+            dot.layoutParams = params
+
+            dot.background = ContextCompat.getDrawable(this, R.drawable.dot_shape)?.mutate()
+
+            val color = when {
+                i < currentCharIndex -> Color.parseColor("#8B6914")  // bronze = done
+                i == currentCharIndex -> Color.parseColor("#FFD700")  // gold = current
+                else -> Color.parseColor("#3A3A4A")                  // dim = future
+            }
+            dot.background?.setTint(color)
+
+            llProgressDots.addView(dot)
         }
     }
 
@@ -132,23 +171,75 @@ class PartyCreationActivity : AppCompatActivity() {
     }
 
     private fun updateStatsPreview() {
-        val maxHp = selectedClass.baseHp + selectedRace.hpBonus
-        val maxMp = selectedClass.baseMp + selectedRace.mpBonus
-        val str = selectedClass.baseStr + selectedRace.strBonus
-        val def = selectedClass.baseDef + selectedRace.defBonus
-        val mag = selectedClass.baseMag + selectedRace.magBonus
-        val spd = selectedClass.baseSpd + selectedRace.spdBonus
-        val lck = selectedClass.baseLck + selectedRace.lckBonus
-        tvStatsPreview.text = """
-            HP: $maxHp    MP: $maxMp
-            STR: $str    DEF: $def    MAG: $mag
-            SPD: $spd    LCK: $lck
-        """.trimIndent()
+        llStatsPreview.removeAllViews()
+        val maxHp  = selectedClass.baseHp  + selectedRace.hpBonus
+        val maxMp  = selectedClass.baseMp  + selectedRace.mpBonus
+        val str    = selectedClass.baseStr + selectedRace.strBonus
+        val def    = selectedClass.baseDef + selectedRace.defBonus
+        val mag    = selectedClass.baseMag + selectedRace.magBonus
+        val spd    = selectedClass.baseSpd + selectedRace.spdBonus
+        val lck    = selectedClass.baseLck + selectedRace.lckBonus
+
+        addStatBar("HP",  maxHp, 70,  "#e05050")
+        addStatBar("MP",  maxMp, 65,  "#5070e0")
+        addStatBar("STR", str,   15,  "#e07830")
+        addStatBar("DEF", def,   15,  "#50a060")
+        addStatBar("MAG", mag,   15,  "#9050e0")
+        addStatBar("SPD", spd,   14,  "#50c8c0")
+        addStatBar("LCK", lck,   12,  "#e0c050")
+    }
+
+    private fun addStatBar(label: String, value: Int, max: Int, hexColor: String) {
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            val dp2 = (2 * resources.displayMetrics.density).toInt()
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.bottomMargin = dp2 * 2
+            layoutParams = params
+        }
+
+        val dp = resources.displayMetrics.density
+
+        val tvLabel = TextView(this).apply {
+            text = label
+            textSize = 11f
+            setTextColor(ContextCompat.getColor(this@PartyCreationActivity, R.color.text_secondary))
+            typeface = android.graphics.Typeface.MONOSPACE
+            layoutParams = LinearLayout.LayoutParams((36 * dp).toInt(), LinearLayout.LayoutParams.WRAP_CONTENT)
+        }
+
+        val bar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
+            max = max
+            progress = value
+            val params = LinearLayout.LayoutParams(0, (8 * dp).toInt(), 1f)
+            params.gravity = android.view.Gravity.CENTER_VERTICAL
+            params.marginStart = (6 * dp).toInt()
+            params.marginEnd = (6 * dp).toInt()
+            layoutParams = params
+            progressDrawable?.setTint(Color.parseColor(hexColor))
+        }
+
+        val tvValue = TextView(this).apply {
+            text = value.toString()
+            textSize = 11f
+            setTextColor(ContextCompat.getColor(this@PartyCreationActivity, R.color.text_primary))
+            typeface = android.graphics.Typeface.MONOSPACE
+            layoutParams = LinearLayout.LayoutParams((24 * dp).toInt(), LinearLayout.LayoutParams.WRAP_CONTENT)
+        }
+
+        row.addView(tvLabel)
+        row.addView(bar)
+        row.addView(tvValue)
+        llStatsPreview.addView(row)
     }
 
     private fun updateUI() {
-        tvProgress.text = "Character ${currentCharIndex + 1} of $PARTY_SIZE"
+        buildProgressDots()
         btnNext.text = if (currentCharIndex == PARTY_SIZE - 1) "Begin Quest!" else "Next >"
+        refreshNextButton()
         updateStatsPreview()
     }
 }
