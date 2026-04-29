@@ -87,7 +87,6 @@ class PartyCreationActivity : AppCompatActivity() {
 
     private fun buildProgressDots() {
         llProgressDots.removeAllViews()
-        val dp8 = (8 * resources.displayMetrics.density).toInt()
         val dp4 = (4 * resources.displayMetrics.density).toInt()
         val dotSize = (10 * resources.displayMetrics.density).toInt()
 
@@ -212,7 +211,7 @@ class PartyCreationActivity : AppCompatActivity() {
         }
 
         val bar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
-            max = max
+            this.max = max
             progress = value
             val params = LinearLayout.LayoutParams(0, (8 * dp).toInt(), 1f)
             params.gravity = android.view.Gravity.CENTER_VERTICAL
