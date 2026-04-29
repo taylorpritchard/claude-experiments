@@ -10,9 +10,10 @@ object CharacterArt {
     // Row 0 (top):    Human · Dwarf · Elf · Halfling · Half-Orc · Gnome
     // Row 1 (bottom): Paladin · Warrior · Mage · Rogue · Ranger · Cleric
 
-    // Measured via pixel analysis — 235px column spacing, first center at x=110
-    private val X_CENTERS = intArrayOf(110, 345, 580, 815, 1050, 1285)
-    private const val HALF_W = 95   // ±95px from center keeps neighbours out
+    // Centroids measured via weighted saturation analysis
+    private val RACE_CX  = intArrayOf(123, 330, 573, 804, 1037, 1279)
+    private val CLASS_CX = intArrayOf(104, 344, 569, 797, 1040, 1270)
+    private const val HALF_W = 95   // ±95px from centre
 
     private const val RACE_Y1  = 145
     private const val RACE_Y2  = 415
@@ -45,7 +46,7 @@ object CharacterArt {
 
     private fun crop(context: Context, col: Int, isRace: Boolean): Bitmap? {
         val src = getSheet(context) ?: return null
-        val cx = X_CENTERS[col]
+        val cx = if (isRace) RACE_CX[col] else CLASS_CX[col]
         val x  = (cx - HALF_W).coerceAtLeast(0)
         val y  = if (isRace) RACE_Y1 else CLASS_Y1
         val w  = (HALF_W * 2).coerceAtMost(src.width - x)
