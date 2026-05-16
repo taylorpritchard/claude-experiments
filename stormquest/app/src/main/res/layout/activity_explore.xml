@@ -74,27 +74,26 @@
     </ScrollView>
 
     <!-- Bottom action buttons -->
+    <Button
+        android:id="@+id/btnAdvance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Advance to Next Floor"
+        style="@style/GoldButton"
+        android:layout_marginBottom="6dp"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btnAdvance"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="Advance"
-            style="@style/GoldButton"
-            android:layout_marginEnd="4dp"/>
-
-        <Button
             android:id="@+id/btnRest"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Rest\n(10G)"
-            style="@style/BronzeButton"
+            android:text="Rest\n(10 gold)"
+            style="@style/RestButton"
             android:layout_marginEnd="4dp"/>
 
         <Button
@@ -103,7 +102,16 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Shop"
-            style="@style/ActionButton"/>
+            style="@style/ActionButton"
+            android:layout_marginEnd="4dp"/>
+
+        <Button
+            android:id="@+id/btnSaveQuit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Save &amp;\nQuit"
+            style="@style/QuitButton"/>
     </LinearLayout>
 
 </LinearLayout>

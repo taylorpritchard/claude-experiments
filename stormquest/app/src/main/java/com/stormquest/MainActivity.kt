@@ -13,19 +13,17 @@ import com.stormquest.ui.SaveManager
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var btnContinue: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val btnNewGame  = findViewById<Button>(R.id.btnNewGame)
-        val btnContinue = findViewById<Button>(R.id.btnContinue)
-        val tvVersion   = findViewById<TextView>(R.id.tvVersion)
+        val btnNewGame = findViewById<Button>(R.id.btnNewGame)
+        btnContinue    = findViewById(R.id.btnContinue)
+        val tvVersion  = findViewById<TextView>(R.id.tvVersion)
 
         tvVersion.text = "v1.0 — StormQuest"
-
-        val hasSave = SaveManager.hasSave(this)
-        btnContinue.isEnabled = hasSave
-        btnContinue.alpha     = if (hasSave) 1f else 0.4f
 
         btnContinue.setOnClickListener {
             if (SaveManager.load(this)) {
@@ -45,6 +43,13 @@ class MainActivity : AppCompatActivity() {
                 startNewGame()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val hasSave = SaveManager.hasSave(this)
+        btnContinue.isEnabled = hasSave
+        btnContinue.alpha     = if (hasSave) 1f else 0.4f
     }
 
     private fun startNewGame() {

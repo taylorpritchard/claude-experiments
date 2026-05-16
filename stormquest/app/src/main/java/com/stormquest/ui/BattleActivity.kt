@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.stormquest.R
@@ -105,6 +106,20 @@ class BattleActivity : AppCompatActivity() {
     private fun shakeView(view: View) {
         ObjectAnimator.ofFloat(view, "translationX", 0f, -14f, 14f, -10f, 10f, -5f, 5f, 0f)
             .apply { duration = 280; start() }
+    }
+
+    // Blue-white pulse: scales up briefly then fades back — "magic impact" feel
+    private fun flashMagic(view: View) {
+        view.alpha  = 0.45f
+        view.scaleX = 1.06f
+        view.scaleY = 1.06f
+        view.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(380).start()
+    }
+
+    // Red dim flash: briefly darkens the party panel — "taking damage" feel
+    private fun flashHit(view: View) {
+        view.alpha = 0.40f
+        view.animate().alpha(1f).setDuration(300).start()
     }
 
     private fun refresh() {
@@ -526,17 +541,23 @@ class BattleActivity : AppCompatActivity() {
             addLog(msg)
         }
 
-        val hasAttack = result.messages.any { it.contains("attacks") }
-        val hasMagic  = result.messages.any { it.contains("casts") }
-        val enemyHit  = enemies.any { e -> result.messages.any { it.contains(e.displayName) && it.contains("takes") } }
-        val partyHit  = party.any  { c -> result.messages.any { it.contains(c.name)          && it.contains("takes") } }
+        // Use playerActions directly — no fragile message string parsing
+        val playerMagic   = playerActions.values.any { it.type == ActionType.MAGIC }
+        val playerAttacked = playerActions.values.any { it.type == ActionType.ATTACK || it.type == ActionType.ITEM }
+        // Enemy hit the party if any battle message starts with an enemy's name and contains "damage"
+        val partyHit = enemies.any { e ->
+            result.messages.any { it.startsWith(e.displayName) && it.contains("damage") }
+        }
 
         when {
-            hasMagic  -> SoundManager.magic()
-            hasAttack -> SoundManager.attack()
+            playerMagic    -> { SoundManager.magic();  flashMagic(llEnemyStatus) }
+            playerAttacked -> { SoundManager.attack(); shakeView(llEnemyStatus) }
         }
-        if (enemyHit)  shakeView(llEnemyStatus)
-        if (partyHit)  shakeView(llPartyBattle)
+        if (partyHit) {
+            SoundManager.hit()
+            shakeView(llPartyBattle)
+            flashHit(llPartyBattle)
+        }
 
         refresh()
 
