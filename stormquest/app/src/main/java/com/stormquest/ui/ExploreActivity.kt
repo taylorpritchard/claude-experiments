@@ -45,6 +45,7 @@ class ExploreActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         refresh()
+        SaveManager.save(this)
     }
 
     private fun refresh() {
